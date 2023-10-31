@@ -1,0 +1,9 @@
+.CreatedCars{
+    border-radius: 10px;
+    background-color: rgb(247, 247, 247);
+}
+
+.ClonedCars{
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+}
