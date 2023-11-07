@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CarFactoryService } from 'src/app/car-factory.service';
 import { SUVCar } from 'src/app/car-models';
+import { Car } from 'src/app/car.model';
 
 @Component({
   selector: 'app-suv',
@@ -9,12 +10,16 @@ import { SUVCar } from 'src/app/car-models';
   styleUrls: ['./suv.component.css']
 })
 export class SuvComponent {
-  brand: string = "";
-  model: string = "";
-  year: number = 0;
-
   individualFields: { title: string, value: string | number }[] = []
   carForm: FormGroup;
+
+  isEdit: boolean = false;
+  valueToEdit: any = [];
+  memoryLocationValueToEdit: string = '';
+
+  sedanNew: any;
+  sedans: any[] = [];
+
   constructor(public carFactoryService: CarFactoryService, private fb: FormBuilder) {
     this.carForm = this.fb.group({
       brand: ['', Validators.required],
@@ -39,15 +44,20 @@ export class SuvComponent {
   onSubmit() {
     if (this.carForm.valid) {
       const sedanFields = this.carForm.value.individualFields;
+      const memoryLocation = `0x${(Math.random() * 0xFFFFFFFF).toString(16)}`;
       const sedanCar = new SUVCar(
+        memoryLocation,
         this.carForm.value.brand,
         this.carForm.value.model,
         this.carForm.value.year,
         sedanFields
       );
-      const memoryLocation = `0x${(Math.random() * 0xFFFFFFFF).toString(16)}`;
       this.carFactoryService.registerCar('suv', sedanCar);
       this.carFactoryService.addCreatedCar('suv', sedanCar);
+
+      this.carForm.reset();
+      const individualFieldsFormArray = this.carForm.get('individualFields') as FormArray;
+      individualFieldsFormArray.clear();
     }
   }
 
@@ -56,17 +66,75 @@ export class SuvComponent {
     individualFields.removeAt(index);
   }
 
-  sedanNew: any
-  sedans: any[] = [];
-
   cloneCars(type: string): void {
-    const clonedCar = this.carFactoryService.getCar(type);
-    this.carFactoryService.addClonedCars(type, clonedCar);
-    console.log("clonedCar",clonedCar)
-    if (this.sedanNew === clonedCar) {
+    this.carFactoryService.addClonedCars(type);
+  }
+
+
+  getClonedCars(type: string): { car: Car }[] {
+    return this.carFactoryService.getClonedCars(type);
+  }
+
+  editcar(car: any) {
+    this.isEdit = true
+    this.valueToEdit = car;
+    this.memoryLocationValueToEdit = car.memoryLocation;
+
+    this.carForm.patchValue({
+      brand: car.brand,
+      model: car.model,
+      year: car.year
+    });
+
+    if (Array.isArray(car.individualFields)) {
+      const individualFieldsFormArray = this.carForm.get('individualFields') as FormArray;
+      individualFieldsFormArray.clear();
+
+      car.individualFields.forEach((field: { title: string, value: string | number }) => {
+        const fieldGroup = this.fb.group({
+          title: [field.title, Validators.required],
+          value: [field.value, Validators.required]
+        });
+        individualFieldsFormArray.push(fieldGroup);
+      });
+    }
+
+  }
+
+  updateCarFromForm() {
+    const updatedCarData = this.carForm.value;
+    const memoryLocation = this.memoryLocationValueToEdit;
+    this.carForm.reset();
+    this.isEdit = false;
+    const individualFieldsFormArray = this.carForm.get('individualFields') as FormArray;
+    individualFieldsFormArray.clear();
+    this.carFactoryService.updateCar(updatedCarData, memoryLocation, 'suv');
+  }
+
+  ClearCreated(type: string) {
+    this.carFactoryService.clearCreated(type)
+  }
+  ClearCloned(type: string) {
+    this.carFactoryService.clearCloned(type)
+  }
+  ClearAll(type: string) {
+    this.carFactoryService.clearAll(type)
+  }
+
+  MemoryCheck: string = '';
+
+  memoryCheck() {
+    const clonedCars = this.carFactoryService.getClonedCars('suv');
+    const clonedCar = this.carFactoryService.getCreatedCars('suv');
+    if (clonedCars === clonedCar) {
       console.log("true")
+      this.MemoryCheck = 'true'
     } else {
       console.log("false")
+      this.MemoryCheck = 'false'
     }
+  }
+  ClearMemoryCheck(){
+    this.MemoryCheck = ''
   }
 }

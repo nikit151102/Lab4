@@ -7,3 +7,13 @@
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
 }
+.check{
+    margin-top: 10px;
+    display: flex;
+    align-content: flex-start;
+    width: 100%;
+    height: 20px;
+}
+.check P{
+    margin-top: 0;
+}

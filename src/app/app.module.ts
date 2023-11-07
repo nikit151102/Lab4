@@ -8,12 +8,13 @@ import { SedanComponent } from './TypesCars/sedan/sedan.component';
 import { SportsComponent } from './TypesCars/sports/sports.component';
 import { SuvComponent } from './TypesCars/suv/suv.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
     SedanComponent,
     SportsComponent,
-    SuvComponent
+    SuvComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,5 @@
 export class Car {
+    memoryLocation: string = '';
     brand: string = '';
     model: string = '';
     year: number = 0;
@@ -6,6 +7,7 @@ export class Car {
 
     clone(): Car {
         const clonedCar = new Car();
+        clonedCar.memoryLocation = `0x${(Math.random() * 0xFFFFFFFF).toString(16)}`;
         clonedCar.brand = this.brand;
         clonedCar.model = this.model;
         clonedCar.year = this.year;

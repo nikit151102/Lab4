@@ -1,69 +1,79 @@
-  
-  <form [formGroup]="carForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="brand">Brand:</label>
-      <input type="text" formControlName="brand" />
-    </div>
-    <div>
-      <label for="model">Model:</label>
-      <input type="text" formControlName="model" />
-    </div>
-    <div>
-      <label for="year">Year:</label>
-      <input type="number" formControlName="year" />
-    </div>
-    <div formArrayName="individualFields">
-      <div *ngFor="let field of individualFieldsControls; let i = index" [formGroupName]="i">
-        <div>
-          <label for="title">Title:</label>
-          <input type="text" formControlName="title" />
-        </div>
-        <div>
-          <label for="value">Value:</label>
-          <input type="text" formControlName="value" />
-        </div>
-        <button type="button" (click)="removeIndividualField(i)">Remove</button>
+<form [formGroup]="carForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="brand">Brand:</label>
+    <input type="text" formControlName="brand" />
+  </div>
+  <div>
+    <label for="model">Model:</label>
+    <input type="text" formControlName="model" />
+  </div>
+  <div>
+    <label for="year">Year:</label>
+    <input type="number" formControlName="year" />
+  </div>
+  <div formArrayName="individualFields">
+    <div *ngFor="let field of individualFieldsControls; let i = index" [formGroupName]="i">
+      <div>
+        <label for="title">Title:</label>
+        <input type="text" formControlName="title" />
       </div>
-      <button type="button" (click)="addIndividualField()">Add Field</button>
+      <div>
+        <label for="value">Value:</label>
+        <input type="text" formControlName="value">
+      </div>
+      <button type="button" (click)="removeIndividualField(i)">Remove</button>
     </div>
+    <button type="button" (click)="addIndividualField()">Add Field</button>
+  </div>
+  <div *ngIf="!isEdit">
     <button type="submit" [disabled]="!carForm.valid">Submit</button>
-  </form>
-    <button (click)="cloneCars('sedan')">Clone sedan</button>
-    
-  
-  
-  <div>
-    <h2>Created Cars</h2>
-    <div class="CreatedCars" *ngFor="let car of carFactoryService.getCreatedCars('sedan')">
-      <h3>Brand: {{ car.car.brand }}</h3>
-      <p>Model: {{ car.car.model }}</p>
-      <p>Year: {{ car.car.year }}</p>
-      <div *ngIf="car.car.individualFields && car.car.individualFields.length > 0">
-        <ul>
-          <li *ngFor="let field of car.car.individualFields">
-            {{ field.title }}: {{ field.value }}
-          </li>
-        </ul>
-      </div>
+  </div>
+  <div *ngIf="isEdit">
+    <button type="button" (click)="updateCarFromForm()">Update</button>
+  </div>
+</form>
+<div class="check">
+  <button type="button" (click)="ClearCreated('sedan')">Clear created</button>
+  <button type="button" (click)="ClearCloned('sedan')">Clear cloned</button>
+  <button type="button" (click)="ClearAll('sedan')">Clear all</button>
+</div>
+<div>
+  <h2>Created Cars</h2>
+  <button (click)="cloneCars('sedan')">Clone sedan</button>
+  <div class="CreatedCars" *ngFor="let car of carFactoryService.getCreatedCars('sedan')">
+    <h3>Brand: {{ car.car.brand }}</h3>
+    <p>memoryLocation: {{ car.car.memoryLocation }}</p>
+    <p>Model: {{ car.car.model }}</p>
+    <p>Year: {{ car.car.year }}</p>
+    <div *ngIf="car.car.individualFields && car.car.individualFields.length > 0">
+      <ul>
+        <li *ngFor="let field of car.car.individualFields">
+          {{ field.title }}: {{ field.value }}
+        </li>
+      </ul>
     </div>
   </div>
-  
-  <div>
-    <h2>Cloned Cars</h2>
-    <div class="ClonedCars" *ngFor="let car of getClonedCars('sedan')">
-      <h3>Brand: {{ car.car.brand }}</h3>
-      <p>Model: {{ car.car.model }}</p>
-      <p>Year: {{ car.car.year }}</p>
-      <div *ngIf="car.car.individualFields && car.car.individualFields.length > 0">
-        <ul>
-          <li *ngFor="let field of car.car.individualFields">
-            {{ field.title }}: {{ field.value }}
-          </li>
-        </ul>
-      </div>
+</div>
+<div class="check">
+  <button type="button" (click)="memoryCheck()">Memory check</button>
+  <button type="button" (click)="ClearMemoryCheck()">Clear memory check</button>
+  <p>{{MemoryCheck}}</p>
+</div>
+<div>
+  <h2>Cloned Cars</h2>
+  <div class="ClonedCars" *ngFor="let car of getClonedCars('sedan')">
+    <h3>Brand: {{ car.car.brand }}</h3>
+    <p>memoryLocation: {{ car.car.memoryLocation }}</p>
+    <p>Model: {{ car.car.model }}</p>
+    <p>Year: {{ car.car.year }}</p>
+    <div *ngIf="car.car.individualFields && car.car.individualFields.length > 0">
+      <ul>
+        <li *ngFor="let field of car.car.individualFields">
+          {{ field.title }}: {{ field.value }}
+        </li>
+      </ul>
     </div>
+
+    <button (click)="editcar(car.car)">edit</button>
   </div>
-  
-  
-  
-  
+</div>
